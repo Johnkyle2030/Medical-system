@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical System Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">Medical System Analytics Dashboard</h1>
+        
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-gray-500 text-sm font-medium">Total Patients</h3>
+                <p class="text-3xl font-bold">{{ patient_count }}</p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-gray-500 text-sm font-medium">Total Diagnoses</h3>
+                <p class="text-3xl font-bold">{{ diagnosis_count }}</p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-gray-500 text-sm font-medium">Average Diagnosis Confidence</h3>
+                <p class="text-3xl font-bold">{{ avg_confidence | round(1) }}%</p>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-4">Diseases by Age</h2>
+                <canvas id="diseaseByAgeChart"></canvas>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-4">Diseases by Religion</h2>
+                <canvas id="diseaseByReligionChart"></canvas>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-4">Diseases by Hospital</h2>
+                <canvas id="diseaseByHospitalChart"></canvas>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-4">Diseases by Referrals</h2>
+                <canvas id="diseaseByReferralsChart"></canvas>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-4">Diseases by Severity</h2>
+                <canvas id="diseaseBySeverityChart"></canvas>
+            </div>
+        </div>
+
+        <script>
+            function generateBarChart(ctx, labels, data, label, backgroundColor) {
+                return new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: label,
+                            data: data,
+                            backgroundColor: backgroundColor
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            function generateLineChart(ctx, labels, data, label, backgroundColor) {
+                return new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: label,
+                            data: data,
+                            backgroundColor: backgroundColor,
+                            borderColor: backgroundColor,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Disease by Age Chart
+            generateBarChart(
+                document.getElementById('diseaseByAgeChart'),
+                {{ disease_by_age|map(attribute='age_group')|list|tojson }},
+                {{ disease_by_age|map(attribute='count')|list|tojson }},
+                'Diseases',
+                'rgba(54, 162, 235, 0.5)'
+            );
+
+            // Disease by Religion Chart
+            generateBarChart(
+                document.getElementById('diseaseByReligionChart'),
+                {{ disease_by_religion|map(attribute='religion')|list|tojson }},
+                {{ disease_by_religion|map(attribute='count')|list|tojson }},
+                'Diseases',
+                'rgba(255, 99, 132, 0.5)'
+            );
+
+            // Disease by Hospital Chart
+            generateBarChart(
+                document.getElementById('diseaseByHospitalChart'),
+                {{ disease_by_hospital|map(attribute='name')|list|tojson }},
+                {{ disease_by_hospital|map(attribute='count')|list|tojson }},
+                'Diseases',
+                'rgba(255, 206, 86, 0.5)'
+            );
+
+            // Disease by Referrals Chart
+            generateLineChart(
+                document.getElementById('diseaseByReferralsChart'),
+                {{ disease_by_referrals|map(attribute='name')|list|tojson }},
+                {{ disease_by_referrals|map(attribute='referral_count')|list|tojson }},
+                'Referrals',
+                'rgba(75, 192, 192, 0.5)'
+            );
+
+            // Disease by Severity Chart
+            generateBarChart(
+                document.getElementById('diseaseBySeverityChart'),
+                {{ disease_by_severity|map(attribute='severity_level')|list|tojson }},
+                {{ disease_by_severity|map(attribute='count')|list|tojson }},
+                'Diseases',
+                'rgba(153, 102, 255, 0.5)'
+            );
+        </script>
+    </div>
+</body>
+</html>

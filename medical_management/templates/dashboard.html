@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div id="disease-age-chart"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="disease-city-chart"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div id="disease-severity-chart"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="disease-gender-chart"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div id="top-hospitals-chart"></div>
+    </div>
+</div>
+
+<script>
+    // Render Plotly charts
+    Plotly.newPlot('disease-age-chart', {{ disease_age_chart | safe }});
+    Plotly.newPlot('disease-city-chart', {{ disease_city_chart | safe }});
+    Plotly.newPlot('disease-severity-chart', {{ disease_severity_chart | safe }});
+    Plotly.newPlot('disease-gender-chart', {{ disease_gender_chart | safe }});
+    Plotly.newPlot('top-hospitals-chart', {{ top_hospitals_chart | safe }});
+</script>
+{% endblock %}
